@@ -46,8 +46,10 @@ if [ "$repo_name" = 'lede' ] || [ "$repo_branch" = 'openwrt-18.06-k5.4' ] || ech
     #     rm -rf ./feeds/routing/cjdns
     #     svn export https://github.com/openwrt/routing/trunk/cjdns ./feeds/routing/cjdns
     # fi
-    rm -rf ./feeds/routing/cjdns
-    svn export https://github.com/openwrt/routing/branches/openwrt-21.02/cjdns ./feeds/routing/cjdns
+    if [ -d ./feeds/routing/cjdns ];then
+        rm -rf ./feeds/routing/cjdns
+        svn export https://github.com/openwrt/routing/branches/openwrt-21.02/cjdns ./feeds/routing/cjdns
+    fi
 
 fi
 
