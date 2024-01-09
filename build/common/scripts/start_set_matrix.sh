@@ -10,17 +10,17 @@ if [ "$1" = set ];then
     repository_dispatch_file=$(grep -P '^\s+repository_dispatch:' .github/workflows/*.yml | awk -F: '{print $1}')
     tr -cd '\11\12\15\40-\176' < ${repository_dispatch_file}  > ${repository_dispatch_file}.new
     #yq '.on.workflow_dispatch.inputs' ${repository_dispatch_file}.new > input.yml
-    yq '.on.workflow_dispatch.inputs|to_entries|.[]|{.key: .value.default}' ${repository_dispatch_file}.new > /tmp/var.yml
+    yq  --output-format=yaml '.on.workflow_dispatch.inputs|to_entries|.[]|{.key: .value.default}' ${repository_dispatch_file}.new > /tmp/var.yml
 
 
     # 不为空则是 input 触发
     if [ -n "$(yq '.event.inputs //""' /tmp/github)" ];then
-        yq -P '.event.inputs' /tmp/github >> /tmp/var.yml
+        yq -P  --output-format=yaml '.event.inputs' /tmp/github >> /tmp/var.yml
     fi
 
     # 不为空则是 dispatch 触发
     if [ -n "$(yq '.event.client_payload //""' /tmp/github)" ];then
-        yq -P '.event.client_payload' /tmp/github | sed -r 's#^device:#target:#' >> /tmp/var.yml
+        yq -P  --output-format=yaml '.event.client_payload' /tmp/github | sed -r 's#^device:#target:#' >> /tmp/var.yml
     fi
 
     sed -r 's#: #=#' /tmp/var.yml > /tmp/var.sh
@@ -47,7 +47,7 @@ if [ "$1" = set ];then
 fi
 
 if [ ! -f /tmp/var.sh ];then
-    yq -P /tmp/github.json | sed -r 's#: #=#' > /tmp/var.sh
+    yq -P  --output-format=yaml  /tmp/github.json | sed -r 's#: #=#' > /tmp/var.sh
     cat /tmp/var.sh
     source /tmp/var.sh
     cat /tmp/var.sh >>  $GITHUB_ENV
