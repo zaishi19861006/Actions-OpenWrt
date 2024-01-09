@@ -14,12 +14,12 @@ if [ "$1" = set ];then
 
 
     # 不为空则是 input 触发
-    if [ -n "$(yq '.event.inputs //""' /tmp/github)" ];then
+    if [ -n "$(yq  --output-format=yaml '.event.inputs //""' /tmp/github)" ];then
         yq -P  --output-format=yaml '.event.inputs' /tmp/github >> /tmp/var.yml
     fi
 
     # 不为空则是 dispatch 触发
-    if [ -n "$(yq '.event.client_payload //""' /tmp/github)" ];then
+    if [ -n "$(yq  --output-format=yaml  '.event.client_payload //""' /tmp/github)" ];then
         yq -P  --output-format=yaml '.event.client_payload' /tmp/github | sed -r 's#^device:#target:#' >> /tmp/var.yml
     fi
 
